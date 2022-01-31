@@ -128,7 +128,7 @@ Resources:
               InputArtifacts:
                 - Name: 'dist'
               Configuration:
-                BucketName: 'equal-experts-calculator'
+                BucketName: 'calculator-static-website'
                 Extract: 'true'
 
   Webhook:
