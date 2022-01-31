@@ -118,6 +118,8 @@ Resources:
               OutputArtifacts:
                 - Name: 'dist'
 
+        - Name: 'Deploy'
+          Actions:
             - Name: 'deploy'
               RunOrder: 2
               ActionTypeId:
