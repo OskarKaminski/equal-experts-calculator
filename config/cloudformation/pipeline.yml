@@ -20,6 +20,10 @@ Parameters:
     Default: 'calculator-builds'
     Description: 'Name for Calculator CI/CD Pipeline builds'
     Type: 'String'
+  BucketForStaticWebsiteName:
+    Default: 'calculator-static-website'
+    Description: 'Name for the bucket hosting the Calculator static website'
+    Type: 'String'
   ArifactStoreBucket:
     Default: 'calculator-builds'
     Description: 'Name for S3 bucket to store the build'
@@ -162,6 +166,19 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref BuildBucketName
+
+  BucketForStaticWebsite:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref BucketForStaticWebsiteName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: 'index.html'
+        ErrorDocument: 'error.html'
 
 Outputs:
   WebhookUrl:
