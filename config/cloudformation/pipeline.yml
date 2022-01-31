@@ -130,7 +130,7 @@ Resources:
               InputArtifacts:
                 - Name: 'dist'
               Configuration:
-                BucketName: 'calculator-static-website'
+                BucketName: !Ref BucketForStaticWebsiteName
                 Extract: 'true'
 
   Webhook:
