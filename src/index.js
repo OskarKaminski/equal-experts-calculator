@@ -1,14 +1,12 @@
 import React from 'react';
 import { render } from 'react-dom';
-import App from './App';
+import Calculator from './pages/Calculator/Calculator';
 
 let root = document.createElement('div')
 document.body.appendChild(root)
 
 render(
-    <div>
-        <App/>
-    </div>,
+    <Calculator/>,
     root
 );
 
