@@ -1,0 +1,169 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  CI/CD for Equal Experts Calculator
+
+Parameters:
+  PipelineName:
+    Default: 'Calculator-CI-FE'
+    Description: 'Name for Calculator CI/CD Pipeline'
+    Type: 'String'
+  WebhookName:
+    Default: 'Calculator-CI-FE'
+    Description: 'Name for Calculator CI/CD Github webhook'
+    Type: 'String'
+  RoleName:
+    Default: 'Calculator-CI-FE'
+    Description: 'Name for Calculator CI/CD Pipeline role'
+    Type: 'String'
+  BuildBucketName:
+    Default: 'calculator-builds'
+    Description: 'Name for Calculator CI/CD Pipeline builds'
+    Type: 'String'
+  ArifactStoreBucket:
+    Default: 'calculator-builds'
+    Description: 'Name for S3 bucket to store the build'
+    Type: 'String'
+  GithubOwner:
+    Default: 'OskarKaminski'
+    Description: 'Name of the github owner, who has the repo to fetch'
+    Type: 'String'
+  GithubRepo:
+    Default: 'equal-experts-calculator'
+    Description: 'Name of the github repository'
+    Type: 'String'
+  GithubBranch:
+    Default: 'master'
+    Description: 'Name of the github branch, that should be fetched'
+    Type: 'String'
+  OAuthToken:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: 'Github-PAT'
+    Description: 'The name of Github PAT defined in parameters store'
+  GithubSecret:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: 'GITHUB_BE_UPDATED_SECRET'
+    Description: 'The secret used to ensure, that webhook comes from github'
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: 'CodePipeline Settings'
+        Parameters:
+          - PipelineName
+          - OAuthToken
+          - GithubSecret
+          - WebhookName
+
+Resources:
+  Build:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Artifacts:
+        Type: 'CODEPIPELINE'
+      Description: 'Build process to bundle the project'
+      Environment:
+        ComputeType: 'BUILD_GENERAL1_SMALL'
+        Image: 'aws/codebuild/standard:4.0'
+        Type: 'LINUX_CONTAINER'
+      Name: 'CalculatorBuild'
+      ServiceRole: !GetAtt [Role, Arn]
+      Source:
+        Type: 'CODEPIPELINE'
+
+  Pipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      Name: !Ref PipelineName
+      RoleArn: !GetAtt [Role, Arn]
+      ArtifactStore:
+        Location: !Ref ArifactStoreBucket
+        Type: S3
+      Stages:
+        - Name: 'Source'
+          Actions:
+            - Name: 'fetch-github'
+              ActionTypeId:
+                Category: 'Source'
+                Owner: 'ThirdParty'
+                Provider: 'GitHub'
+                Version: '1'
+              Configuration:
+                Branch: !Ref GithubBranch
+                Owner: !Ref GithubOwner
+                OAuthToken: !Ref OAuthToken
+                PollForSourceChanges: 'false'
+                Repo: !Ref GithubRepo
+              OutputArtifacts:
+                - Name: 'TemplateSource'
+
+        - Name: 'Build'
+          Actions:
+            - Name: 'build'
+              RunOrder: 1
+              ActionTypeId:
+                Category: 'Build'
+                Owner: 'AWS'
+                Provider: 'CodeBuild'
+                Version: '1'
+              InputArtifacts:
+                - Name: 'TemplateSource'
+              Configuration:
+                ProjectName: 'Build'
+              OutputArtifacts:
+                - Name: 'dist'
+
+            - Name: 'deploy'
+              RunOrder: 2
+              ActionTypeId:
+                Category: 'Deploy'
+                Owner: 'AWS'
+                Provider: 'S3'
+                Version: '1'
+              InputArtifacts:
+                - Name: 'dist'
+              Configuration:
+                BucketName: 'equal-experts-calculator'
+                Extract: 'true'
+
+  Webhook:
+    Type: 'AWS::CodePipeline::Webhook'
+    Properties:
+      Name: !Ref WebhookName
+      Authentication: 'GITHUB_HMAC'
+      AuthenticationConfiguration:
+        SecretToken: !Ref GithubSecret
+      Filters:
+        - JsonPath: "$.ref"
+          MatchEquals: 'refs/heads/master'
+      TargetPipeline: !Ref PipelineName
+      TargetAction: fetch-github
+      TargetPipelineVersion: !GetAtt Pipeline.Version
+      RegisterWithThirdParty: 'true'
+
+  Role:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Ref RoleName
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: ['sts:AssumeRole']
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'codepipeline.amazonaws.com'
+                - 'codebuild.amazonaws.com'
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AdministratorAccess'
+
+  BucketForBuilds:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref BuildBucketName
+
+Outputs:
+  WebhookUrl:
+    Description: 'The url for the github webhook'
+    Value: !GetAtt Webhook.Url
