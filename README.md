@@ -15,10 +15,13 @@ As usual, run:
 
 The project (by default) runs on `localhost:8080`.
 
+[You can also see a live demo here](http://calculator-static-website.s3-website.eu-central-1.amazonaws.com/).
+
 ## Features & Limitations
 - All logic (`CalculatorState` class) was written using TDD approach.
 - Buttons are animated for increased immersion.
 - Branding was embedded as a core functionality instead of ugly, unnecessary footer everyone wishes to remove.
+- 100% automation via IaaC (CloudFormation) and CI/CD (Code Pipelines, Code Build, S3 bucket with static hosting).
 - There is a limited number of operators implemented following an Open-Closed principle enabling their easy extension
   without need for modification of any existing functional code.
 - Responsiveness to the device size is limited: the minimum device width is 300px and the calculator doesn't change
