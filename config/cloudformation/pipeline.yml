@@ -75,6 +75,7 @@ Resources:
       ServiceRole: !GetAtt [Role, Arn]
       Source:
         Type: 'CODEPIPELINE'
+        BuildSpec: 'config/build/buildspec.yml'
 
   Pipeline:
     Type: 'AWS::CodePipeline::Pipeline'

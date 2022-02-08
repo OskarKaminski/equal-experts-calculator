@@ -4,7 +4,7 @@ import { CalculatorState } from '../../pages/Calculator/logic/CalculatorState'
 export default class KeypadCtrl {
     buttons = [
         {label: 'C', onClick: () => this.resetState(), color: KeypadCtrl.ButtonColors.secondary},
-        {label: '+/-', color: KeypadCtrl.ButtonColors.secondary},
+        {label: '!', onClick: () => this.operationPressed(CalculatorState.operators.FACTORIAL), color: KeypadCtrl.ButtonColors.secondary},
         {label: '%', color: KeypadCtrl.ButtonColors.secondary},
         {label: 'div', rounded: true, color: KeypadCtrl.ButtonColors.secondary},
         {label: '7', onClick: () => this.numberPressed(7), color: KeypadCtrl.ButtonColors.primary},

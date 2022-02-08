@@ -175,10 +175,12 @@ describe('Calculating result and memory', () => {
 
     describe('When numbers are pressed before operator is chosen', () => {
 
-        test(`result returns the pressed numbers concatenated`, () => {
-            // Init state
-            const state = new CalculatorState({})
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+        })
 
+        test(`result returns the pressed numbers concatenated`, () => {
             // Execute action
             state.numberPressed(3)
             state.numberPressed(2)
@@ -190,9 +192,6 @@ describe('Calculating result and memory', () => {
         })
 
         test(`memory returns an empty string`, () => {
-            // Init state
-            const state = new CalculatorState({})
-
             // Execute action
             state.numberPressed(3)
             state.numberPressed(2)
@@ -207,12 +206,13 @@ describe('Calculating result and memory', () => {
 
     describe('When ordinary operator is chosen', () => {
 
-        test(`result returns numbers pressed before`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 34
-            })
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(34)
+        })
 
+        test(`result returns numbers pressed before`, () => {
             // Execute action
             state.operationPressed(CalculatorState.operators.ADD)
 
@@ -223,11 +223,6 @@ describe('Calculating result and memory', () => {
         })
 
         test(`memory returns a string: {left side} {the operator}`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 34
-            })
-
             // Execute action
             state.operationPressed(CalculatorState.operators.ADD)
 
@@ -241,10 +236,12 @@ describe('Calculating result and memory', () => {
 
     describe('When ordinary operator is chosen before left side is set', () => {
 
-        test(`memory returns empty string`, () => {
-            // Init state
-            const state = new CalculatorState({})
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+        })
 
+        test(`memory returns empty string`, () => {
             // Execute action
             state.operationPressed(CalculatorState.operators.ADD)
 
@@ -258,13 +255,14 @@ describe('Calculating result and memory', () => {
 
     describe('When numbers are pressed after operator is chosen', () => {
 
-        test(`result returns pressed numbers concatenated`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 1,
-                operator: CalculatorState.operators.ADD
-            })
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(34)
+            state.operationPressed(CalculatorState.operators.ADD)
+        })
 
+        test(`result returns pressed numbers concatenated`, () => {
             // Execute action
             state.numberPressed(3)
             state.numberPressed(2)
@@ -276,12 +274,6 @@ describe('Calculating result and memory', () => {
         })
 
         test(`memory returns a string: {left side} {the operator}`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 34,
-                operator: CalculatorState.operators.ADD
-            })
-
             // Execute action
             state.numberPressed(3)
             state.numberPressed(2)
@@ -296,17 +288,16 @@ describe('Calculating result and memory', () => {
 
     describe('When RESULT operator is pressed after right side numbers are set', () => {
 
-        test(`result returns a result of the operation`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(10)
+            state.operationPressed(CalculatorState.operators.ADD)
+            state.numberPressed(30)
             state.calculateResult()
+        })
 
+        test(`result returns a result of the operation`, () => {
             // Get result
             const result = state.result
 
@@ -314,16 +305,6 @@ describe('Calculating result and memory', () => {
         })
 
         test(`memory returns a string: {left side} {the operator} {right side} =`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
-            state.calculateResult()
-
             // Get result
             const result = state.memory
 
@@ -334,18 +315,17 @@ describe('Calculating result and memory', () => {
 
     describe('When ordinary operator is pressed after EQUAL operator', () => {
 
-        test(`left side is set with a value of last result and memory returns a string: {left side} {the operator}`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(10)
+            state.operationPressed(CalculatorState.operators.ADD)
+            state.numberPressed(30)
             state.calculateResult()
             state.operationPressed(CalculatorState.operators.ADD)
+        })
 
+        test(`left side is set with a value of last result and memory returns a string: {left side} {the operator}`, () => {
             // Get result
             const result = state.memory
 
@@ -356,17 +336,16 @@ describe('Calculating result and memory', () => {
 
     describe('When ordinary operator is pressed after another ordinary operator', () => {
 
-        test(`left side is set with a value of last result and memory returns a string: {left side} {the operator}`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(10)
+            state.operationPressed(CalculatorState.operators.ADD)
+            state.numberPressed(30)
             state.operationPressed(CalculatorState.operators.SUBTRACT)
+        })
 
+        test(`left side is set with a value of last result and memory returns a string: {left side} {the operator}`, () => {
             // Get result
             const result = state.memory
 
@@ -377,18 +356,17 @@ describe('Calculating result and memory', () => {
 
     describe('When RESULT operator is pressed multiple times in a row', () => {
 
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(10)
+            state.operationPressed(CalculatorState.operators.ADD)
+            state.numberPressed(30)
+            state.calculateResult()
+            state.calculateResult()
+        })
+
         test(`left side is set as the last result, operation is repeated with unchanged right side and the last result is updated`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
-            state.calculateResult()
-            state.calculateResult()
-
             // Get result
             const result = state.result
 
@@ -396,17 +374,6 @@ describe('Calculating result and memory', () => {
         })
 
         test(`memory returns a string: {left side} {the operator} {right side} =`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
-            state.calculateResult()
-            state.calculateResult()
-
             // Get result
             const result = state.memory
 
@@ -417,18 +384,17 @@ describe('Calculating result and memory', () => {
 
     describe('When number is pressed after the last result has been calculated', () => {
 
-        test(`result returns the pressed number`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(10)
+            state.operationPressed(CalculatorState.operators.ADD)
+            state.numberPressed(30)
             state.calculateResult()
             state.numberPressed(3)
+        })
 
+        test(`result returns the pressed number`, () => {
             // Get result
             const result = state.result
 
@@ -436,21 +402,35 @@ describe('Calculating result and memory', () => {
         })
 
         test(`memory is empty`, () => {
-            // Init state
-            const state = new CalculatorState({
-                leftSide: 10,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 30
-            })
-
-            // Execute action
-            state.calculateResult()
-            state.numberPressed(3)
-
             // Get result
             const result = state.memory
 
             expect(result).toEqual('')
+        })
+
+    })
+
+    describe('When unitary operator is pressed', () => {
+
+        let state
+        beforeEach(() => {
+            state = new CalculatorState({})
+            state.numberPressed(6)
+            state.operationPressed(CalculatorState.operators.FACTORIAL)
+        })
+
+        test(`result returns the result of the operation`, () => {
+            // Get result
+            const result = state.result
+
+            expect(result).toEqual(720)
+        })
+
+        test(`memory returns a string: {the operator}({left side})`, () => {
+            // Get result
+            const result = state.memory
+
+            expect(result).toEqual('fact( 6 )')
         })
 
     })
@@ -464,13 +444,12 @@ describe('Available operations', () => {
 
         test(`adds two numbers`, () => {
             // Init state
-            const state = new CalculatorState({
-                leftSide: 2,
-                operator: CalculatorState.operators.ADD,
-                rightSide: 3
-            })
+            const state = new CalculatorState({})
 
             // Execute action
+            state.numberPressed(2)
+            state.operationPressed(CalculatorState.operators.ADD)
+            state.numberPressed(3)
             state.calculateResult()
 
             // Get result
@@ -485,13 +464,12 @@ describe('Available operations', () => {
 
         test(`subtracts two numbers`, () => {
             // Init state
-            const state = new CalculatorState({
-                leftSide: 2,
-                operator: CalculatorState.operators.SUBTRACT,
-                rightSide: 3
-            })
+            const state = new CalculatorState({})
 
             // Execute action
+            state.numberPressed(2)
+            state.operationPressed(CalculatorState.operators.SUBTRACT)
+            state.numberPressed(3)
             state.calculateResult()
 
             // Get result
@@ -502,24 +480,54 @@ describe('Available operations', () => {
 
     })
 
-
     describe('Clear operation', () => {
 
         test(`Resets the state`, () => {
             // Init state
-            const state = new CalculatorState({
-                leftSide: 2,
-                operator: CalculatorState.operators.SUBTRACT,
-                rightSide: 3
-            })
+            const state = new CalculatorState({})
 
             // Execute action
+            state.numberPressed(2)
+            state.operationPressed(CalculatorState.operators.SUBTRACT)
+            state.numberPressed(3)
             state.calculateResult()
 
             // Get result
             const result = state.result
 
             expect(result).toEqual(-1)
+        })
+
+    })
+
+    describe('Factorial operation', () => {
+
+        test(`calculates a factorial for the left side of the operator`, () => {
+            // Execute action
+            const result = CalculatorState.FACTORIAL(6)
+
+            expect(result).toEqual(720)
+        })
+
+        test(`returns 1 for a factorial 0`, () => {
+            // Execute action
+            const result = CalculatorState.FACTORIAL(0)
+
+            expect(result).toEqual(1)
+        })
+
+        test(`calculates a factorial for the left side of the operator`, () => {
+            // Init state
+            const state = new CalculatorState({})
+
+            // Execute action
+            state.numberPressed(6)
+            state.operationPressed(CalculatorState.operators.FACTORIAL)
+
+            // Get result
+            const result = state.result
+
+            expect(result).toEqual(720)
         })
 
     })

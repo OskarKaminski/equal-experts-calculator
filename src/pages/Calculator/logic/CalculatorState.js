@@ -25,6 +25,11 @@ export class CalculatorState {
         if(this.lastResult){
             return this.lastResult
         }
+        if(this.operator?.unitary){
+            this.operationPressed(this.operator)
+            this.calculateResult()
+            return this.lastResult
+        }
         if(!this.rightSide){
             return this.leftSide || 0
         } else {
@@ -35,6 +40,8 @@ export class CalculatorState {
     get memory(){
         if(!this.operator){
             return ''
+        } else if(this.operator.unitary) {
+            return `${this.operator.label}( ${this.leftSide} )`
         } else if(this.lastResult) {
             return `${this.leftSide} ${this.operator.label} ${this.rightSide} =`
         } else {
@@ -117,6 +124,14 @@ CalculatorState.SUBTRACT = (leftSide, rightSide) => {
     return leftSide - rightSide
 }
 
+CalculatorState.FACTORIAL = (value) => {
+    let result = 1
+    for(let i=1; i<=value; i++){
+        result *= i
+    }
+    return result
+}
+
 CalculatorState.operators = {
     ADD: {
         label: '+',
@@ -125,6 +140,11 @@ CalculatorState.operators = {
     SUBTRACT: {
         label: '-',
         fn: CalculatorState.SUBTRACT
+    },
+    FACTORIAL: {
+        label: 'fact',
+        unitary: true,
+        fn: CalculatorState.FACTORIAL
     }
 }
 
