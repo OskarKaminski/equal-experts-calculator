@@ -530,6 +530,22 @@ describe('Available operations', () => {
             expect(result).toEqual(720)
         })
 
+        test(`calculates a factorial for the left side of the operator`, () => {
+            // Init state
+            const state = new CalculatorState({})
+
+            // Execute action
+            state.numberPressed(2)
+            state.operationPressed(CalculatorState.operators.FACTORIAL)
+            state.resetState()
+            state.numberPressed(3)
+
+            // Get result
+            const result = state.result
+
+            expect(result).toEqual(3)
+        })
+
     })
 
 })
