@@ -1,4 +1,4 @@
-# Calculator project for Equal Experts interview
+# Calculator
 
 [<img src="./assets/img1.jpg" height="250"/>](./assets/img1.jpg)
 
