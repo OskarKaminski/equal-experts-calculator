@@ -2,7 +2,7 @@
 
 [<img src="./assets/img1.jpg" height="250"/>](./assets/img1.jpg)
 
-This is an implementation of a simple calculator built as part of an interview process for [Equal Experts](https://www.equalexperts.com/).
+This is an implementation of a simple calculator.
 
 [You can find the full problem description here](https://equalexperts.github.io/ee-tech-interviews-uk/calculator-problem.html).
 
