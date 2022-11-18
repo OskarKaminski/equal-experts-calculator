@@ -4,8 +4,6 @@
 
 This is an implementation of a simple calculator.
 
-[You can find the full problem description here](https://equalexperts.github.io/ee-tech-interviews-uk/calculator-problem.html).
-
 __Version number:__ 5b8d0fd276b6d288905ed2f63a934e057e8feca2
 
 ## Getting started
